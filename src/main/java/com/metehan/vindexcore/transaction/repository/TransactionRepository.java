@@ -10,6 +10,4 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends MongoRepository<Transaction, String>, TransactionRepositoryCustom {
 
-    List<Transaction> findTop10ByOrderByTransactionDateDesc();
-
 }

@@ -8,6 +8,7 @@ import com.metehan.vindexcore.transaction.repository.TransactionRepository;
 import com.metehan.vindexcore.transaction.repository.TransactionSearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +29,20 @@ public class DashboardService {
         LocalDate start = targetMonth.atDay(1);
         LocalDate end = targetMonth.atEndOfMonth();
 
-        TransactionSearchCriteria criteria = new TransactionSearchCriteria(
+        TransactionSearchCriteria monthlyCriteria = new TransactionSearchCriteria(
                 null, null, start, end, null, null, null
         );
-        Page<Transaction> monthlyPage = transactionRepository.search(criteria, Pageable.unpaged());
+        Page<Transaction> monthlyPage = transactionRepository.search(monthlyCriteria, Pageable.unpaged());
         List<Transaction> monthlyTransactions = monthlyPage.getContent();
 
         BigDecimal totalIncome = sumByType(monthlyTransactions, TransactionType.INCOME);
         BigDecimal totalExpense = sumByType(monthlyTransactions, TransactionType.EXPENSE);
 
-        List<Transaction> recent = transactionRepository.findTop10ByOrderByTransactionDateDesc();
+        TransactionSearchCriteria recentCriteria = new TransactionSearchCriteria(
+                null, null, null, null, null, null, null
+        );
+        Page<Transaction> recentPage = transactionRepository.search(recentCriteria, PageRequest.of(0, 10));
+        List<Transaction> recent = recentPage.getContent();
 
         DashboardSummaryDTO summary = new DashboardSummaryDTO();
         summary.setTotalIncome(totalIncome);

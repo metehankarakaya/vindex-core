@@ -2,7 +2,9 @@ package com.metehan.vindexcore.transaction.repository;
 
 import com.metehan.vindexcore.transaction.model.Transaction;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -44,7 +46,7 @@ public class TransactionRepositoryCustomImpl implements TransactionRepositoryCus
             filters.add(Criteria.where("amountCent").lte(criteria.maxAmountCent()));
         }
         if (criteria.keyword() != null && !criteria.keyword().isBlank()) {
-            filters.add(Criteria.where("title").regex(criteria.keyword(), "i")); // case-insensitive
+            filters.add(Criteria.where("title").regex(criteria.keyword(), "i"));
         }
 
         Query query = new Query();
@@ -53,7 +55,16 @@ public class TransactionRepositoryCustomImpl implements TransactionRepositoryCus
         }
 
         long total = mongoTemplate.count(query, Transaction.class);
-        query.with(pageable);
+
+        if (pageable.isPaged()) {
+            query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        }
+
+        Sort sort = pageable.getSort().isSorted()
+          ? pageable.getSort()
+          : Sort.by(Sort.Order.desc("transactionDate"), Sort.Order.desc("createdAt"));
+        query.with(sort);
+
         List<Transaction> results = mongoTemplate.find(query, Transaction.class);
 
         return PageableExecutionUtils.getPage(results, pageable, () -> total);

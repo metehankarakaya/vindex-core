@@ -30,4 +30,10 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(status).body(body);
     }
+
+    @ExceptionHandler(RecurringNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleRecurringNotFound(RecurringNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
 }

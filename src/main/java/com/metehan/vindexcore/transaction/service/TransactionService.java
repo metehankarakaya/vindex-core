@@ -70,4 +70,8 @@ public class TransactionService {
         }
     }
 
+    public void deleteAll() {
+        transactionRepository.deleteAll();
+    }
+
 }

@@ -54,4 +54,8 @@ public class RecurringService {
                 .orElseThrow(() -> new RecurringNotFoundException(id));
     }
 
+    public void deleteAll() {
+        recurringRepository.deleteAll();
+    }
+
 }

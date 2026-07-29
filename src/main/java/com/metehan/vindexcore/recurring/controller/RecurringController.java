@@ -42,4 +42,10 @@ public class RecurringController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll() {
+        recurringService.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
 }
